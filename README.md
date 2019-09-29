@@ -20,11 +20,6 @@ example:demoApp_demoProject_1.0.0.zip
       "name": "demoProject",
       "version": "1.0.0",
       "zipPath": "http://localhost:8080/zip/demoApp_demoProject_1.0.0.zip"
-    },
-    {
-      "name": "demoProject2",
-      "version": "2.0.0",
-      "zipPath": "http://localhost:8080/zip/demoApp_demoProject2_2.0.0.zip"
     }
   ],
   "otherFiles": [
