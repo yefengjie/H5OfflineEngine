@@ -2,24 +2,24 @@
 ## H5 Publish
 ### H5 file path rules
 scheme :// host / app-name / project-name / project-version / file_name.* ? query_parameters
+
+example:  http://localhost:8080/demoApp/demoProject/1.0.0/offline.html
+
 ### auto release process
 package project -> generate zip file -> publish offline package -> auto generate config file
 #### zip file name rules
 app-name\_project-name\_project-version.zip
+
+example:demoApp_demoProject_1.0.0.zip
 #### H5 config file json
 ```Java
 {
-   "appName": "xxApp",
+   "appName": "demoApp",
    "projects": [
       {
-         "name": "xxProject",
+         "name": "demoProject",
          "version": "1.0.0",
-         "zipPath": "http://xxx/xxApp_xxProject_1.0.0.zip"
-      },
-      {
-         "name": "xxProject2",
-         "version": "2.0.0",
-         "zipPath": "http://xxx/xxApp_xxProject2_2.0.0.zip"
+         "zipPath": "http://localhost:8080/zip/demoApp_demoProject_1.0.0.zip"
       }
    ]
 }
