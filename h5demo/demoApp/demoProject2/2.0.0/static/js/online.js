@@ -1,0 +1,1 @@
+document.getElementById('js_demo').innerHTML = '<div>Online js Demo</div>';

@@ -1,1 +1,0 @@
-document.getElementById('js_demo').innerHTML = '<div>Offline js Demo2</div>';
