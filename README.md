@@ -37,3 +37,6 @@ put h5 offline zip to android assets -> unzip to special path when app launch
 
 # Increment Update Mode
 todo...
+
+# Test
+open h5demo fold, and sh server.sh to setup a simple h5 website
