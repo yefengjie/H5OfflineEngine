@@ -1,0 +1,2 @@
+include ':app', ':h5_offline_engine'
+rootProject.name='H5OfflineEngine'
