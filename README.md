@@ -14,24 +14,27 @@ example:demoApp_demoProject_1.0.0.zip
 #### H5 config file json
 ```Java
 {
-  "appName": "demoApp",
-  "projects": [
-    {
-      "name": "demoProject",
-      "version": "1.0.0",
-      "zipPath": "http://localhost:8080/zip/demoApp_demoProject_1.0.0.zip"
-    }
-  ],
-  "otherFiles": [
-    "http://localhost:8080/demoApp/otherFiles/otherFiles.js"
-  ]
+   "appName": "demoApp",
+   "projects": [
+      {
+         "name": "demoProject",
+         "version": "1.0.0",
+         "zipPath": "http://localhost:8080/zip/demoApp_demoProject_1.0.0.zip"
+      }
+   ],
+   "otherFiles": {
+      "version": "0.0.1",
+      "paths": [
+         "http://localhost:8080/demoApp/otherFiles/otherFiles.js"
+      ]
+   }
 }
 ```
 ## Native Use
 ### auto update process
 app launch -> fetch H5 config -> diff local config file, check if need update -> background download -> unzip to special path
 #### offline files path rule
-h5offline/projectName/projectVersion/files.*
+h5OfflineEngine/projectName/projectVersion/files.*
 ### intercept resources
 WebViewClient -> shouldInterceptRequest -> check project,version,files -> replace resources with offline files
 ### package to Android apk
