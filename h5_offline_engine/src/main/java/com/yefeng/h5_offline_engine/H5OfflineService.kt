@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
-import android.os.Environment
 import com.hzy.libp7zip.P7ZipApi
 import java.io.File
 
@@ -82,7 +81,7 @@ class H5OfflineService : IntentService("H5OfflineService") {
                 req.setRequiresCharging(false)
             }
             val fileName = remoteUrl.substring(remoteUrl.lastIndexOf(File.separator))
-            val file = File(getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), fileName)
+            val file = File(H5OfflineUtil.getRootDir(this), fileName)
             req.setDestinationUri(Uri.fromFile(file))
             val id = mgr.enqueue(req)
             H5OfflineUtil.log("start download,id=$id $remoteUrl")
@@ -92,7 +91,7 @@ class H5OfflineService : IntentService("H5OfflineService") {
     @Throws(Exception::class)
     private fun onDownloadCompleted(localPath: String) {
         val fileName = localPath.substring(localPath.lastIndexOf(File.separator) + 1)
-        val fileDir = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)!!.absolutePath
+        val fileDir = H5OfflineUtil.getRootDir(this).absolutePath
         val file = File(fileDir, fileName)
         H5OfflineUtil.log("download success:${file.absolutePath}", TAG)
         // unzip file

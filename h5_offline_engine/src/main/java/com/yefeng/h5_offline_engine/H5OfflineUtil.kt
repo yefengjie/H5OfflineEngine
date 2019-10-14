@@ -29,7 +29,13 @@ object H5OfflineUtil {
 
     @Throws(Exception::class)
     fun getRootDir(context: Context): File {
-        return context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)!!
+        val downloadDir = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
+        val rootDir = downloadDir!!.absolutePath + File.separator + "H5OfflineEngine"
+        val file = File(rootDir)
+        if (!file.exists()) {
+            file.mkdirs()
+        }
+        return file
     }
 
     fun log(msg: String, tag: String = "H5OfflineEngine") {
