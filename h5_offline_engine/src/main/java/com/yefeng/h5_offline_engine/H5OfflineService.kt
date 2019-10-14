@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Build
 import com.hzy.libp7zip.P7ZipApi
 import java.io.File
+import java.util.regex.Pattern
 
 
 class H5OfflineService : IntentService("H5OfflineService") {
@@ -65,9 +66,10 @@ class H5OfflineService : IntentService("H5OfflineService") {
         val sp = H5OfflineUtil.getDownloadSp(this)
         val mgr = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
         for (remoteUrl in downloadList) {
-            if (sp.contains(remoteUrl)) {
-                continue
-            }
+            //todo for test
+//            if (sp.contains(remoteUrl)) {
+//                continue
+//            }
             val req = DownloadManager.Request(Uri.parse(remoteUrl))
             req.setAllowedOverRoaming(true)
             req.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE or DownloadManager.Request.NETWORK_WIFI)
@@ -91,14 +93,59 @@ class H5OfflineService : IntentService("H5OfflineService") {
     @Throws(Exception::class)
     private fun onDownloadCompleted(localPath: String) {
         val fileName = localPath.substring(localPath.lastIndexOf(File.separator) + 1)
-        val fileDir = H5OfflineUtil.getRootDir(this).absolutePath
-        val file = File(fileDir, fileName)
-        H5OfflineUtil.log("download success:${file.absolutePath}", TAG)
+        val rootDir = H5OfflineUtil.getRootDir(this)
+        val file = File(rootDir, fileName)
+        val filePath = file.absolutePath
+        H5OfflineUtil.log("download success:$filePath", TAG)
         // unzip file
-        val cmd = Command.getExtractCmd(file.absolutePath, fileDir)
+        val cmd = Command.getExtractCmd(filePath, rootDir.absolutePath)
         P7ZipApi.executeCommand(cmd)
+        H5OfflineUtil.log("unzip file:$fileName")
         // delete zip
         val deleteResult = file.delete()
         H5OfflineUtil.log("delete file:$fileName $deleteResult")
+        // check old version files and delete
+        checkOldVersionFiles(rootDir.absolutePath, fileName)
+    }
+
+    @Throws(Exception::class)
+    private fun checkOldVersionFiles(rootDir: String, fileName: String) {
+        val matcher = Pattern.compile(".+\\d+(\\.\\d+){2}.+").matcher(fileName)
+        if (!matcher.find()) {
+            return
+        }
+        val dirs = fileName.split("_")
+        if (dirs.isNullOrEmpty() || dirs.size <= 1) {
+            return
+        }
+        val versionDir = dirs[dirs.size - 1].substring(0, dirs[dirs.size - 1].lastIndexOf("."))
+        var versionParentDir = ""
+        for (index in 0 until dirs.size - 1) {
+            versionParentDir += dirs[index] + File.separator
+        }
+        val versionParent = File(rootDir, versionParentDir)
+        if (!versionParent.exists()) {
+            return
+        }
+        val children = versionParent.listFiles()
+        if (children.isNullOrEmpty() || children.size <= 1) {
+            return
+        }
+        H5OfflineUtil.log("version dir:$versionDir")
+        for (child in children) {
+            if (child.name != versionDir) {
+                H5OfflineUtil.log("delete dir:$child.absolutePath")
+                deleteRecursive(child)
+            }
+        }
+    }
+
+    @Throws(Exception::class)
+    fun deleteRecursive(fileOrDirectory: File) {
+        if (fileOrDirectory.isDirectory)
+            for (child in fileOrDirectory.listFiles())
+                deleteRecursive(child)
+
+        fileOrDirectory.delete()
     }
 }
