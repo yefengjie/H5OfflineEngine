@@ -39,6 +39,7 @@ class H5OfflineService : IntentService("H5OfflineService") {
             context.startService(intent)
         }
 
+        @Suppress("unused")
         fun download(context: Context, list: ArrayList<String>) {
             val intent = Intent(context, H5OfflineService::class.java).apply {
                 action = ACTION_START_DOWNLOAD
