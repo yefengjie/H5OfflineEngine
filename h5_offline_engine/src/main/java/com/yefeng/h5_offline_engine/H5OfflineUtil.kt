@@ -7,7 +7,6 @@ import android.util.Log
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.File
-import java.net.URLEncoder
 
 object H5OfflineUtil {
     fun checkH5Config(context: Context, configPath: String) {
@@ -18,13 +17,6 @@ object H5OfflineUtil {
         }.onFailure {
             it.printStackTrace()
         }
-    }
-
-    fun encodePath(path: String?): String {
-        if (path.isNullOrBlank()) {
-            return ""
-        }
-        return URLEncoder.encode(path, "utf-8")
     }
 
     @Throws(Exception::class)

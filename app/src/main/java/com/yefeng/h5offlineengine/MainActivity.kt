@@ -40,9 +40,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startService() {
-        val list = ArrayList<String>()
-        list.add("http://localhost:8080/zip/demoApp_demoProject_1.0.0.zip")
-//        list.add("http://localhost:8080/zip/demoApp_demoProject_1.1.0.zip")
-        H5OfflineService.download(this, list)
+//        val list = ArrayList<String>()
+//        list.add("http://localhost:8080/zip/demoApp_demoProject_1.0.0.zip")
+////        list.add("http://localhost:8080/zip/demoApp_demoProject_1.1.0.zip")
+//        H5OfflineService.download(this, list)
+        H5OfflineService.checkUpdate(
+            this,
+            "http://localhost:8080/zip/demoApp_demoProject_1.0.0.zip"
+        )
     }
 }

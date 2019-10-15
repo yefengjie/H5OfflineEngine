@@ -14,9 +14,18 @@ import java.util.regex.Pattern
 class H5OfflineService : IntentService("H5OfflineService") {
     companion object {
         private const val TAG = "H5OfflineService"
+        private const val ACTION_CHECK_UPDATE = "ACTION_CHECK_UPDATE"
         private const val ACTION_START_DOWNLOAD = "ACTION_START_DOWNLOAD"
         private const val ACTION_DOWNLOAD_COMPLETED = "ACTION_DOWNLOAD_COMPLETE"
         private const val PARAMS = "PARAMS"
+
+        fun checkUpdate(context: Context, url: String) {
+            val intent = Intent(context, H5OfflineService::class.java).apply {
+                action = ACTION_CHECK_UPDATE
+                putExtra(PARAMS, url)
+            }
+            context.startService(intent)
+        }
 
         fun download(context: Context, list: ArrayList<String>) {
             val intent = Intent(context, H5OfflineService::class.java).apply {
@@ -38,6 +47,14 @@ class H5OfflineService : IntentService("H5OfflineService") {
     override fun onHandleIntent(intent: Intent?) {
         try {
             when (intent?.action) {
+                ACTION_CHECK_UPDATE -> {
+                    intent.getStringExtra(PARAMS)?.run {
+                        if (this.isEmpty()) {
+                            return
+                        }
+                        checkUpdate(this)
+                    }
+                }
                 ACTION_START_DOWNLOAD -> {
                     intent.getStringArrayListExtra(PARAMS)?.run {
                         if (this.isEmpty()) {
@@ -60,6 +77,12 @@ class H5OfflineService : IntentService("H5OfflineService") {
         }
     }
 
+    @Throws(Exception::class)
+    fun checkUpdate(url: String) {
+        val fileName = url.substring(url.lastIndexOf("/") + 1, url.length)
+        // check dir is exist
+
+    }
 
     @Throws(Exception::class)
     fun downloadFiles(downloadList: ArrayList<String>) {
@@ -67,9 +90,9 @@ class H5OfflineService : IntentService("H5OfflineService") {
         val mgr = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
         for (remoteUrl in downloadList) {
             //todo for test
-//            if (sp.contains(remoteUrl)) {
-//                continue
-//            }
+            if (sp.contains(remoteUrl)) {
+                continue
+            }
             val req = DownloadManager.Request(Uri.parse(remoteUrl))
             req.setAllowedOverRoaming(true)
             req.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE or DownloadManager.Request.NETWORK_WIFI)
