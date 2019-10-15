@@ -165,8 +165,10 @@ class H5OfflineService : IntentService("H5OfflineService") {
         // save to sp
         val sp = H5OfflineUtil.getDownloadSp(this)
         sp.edit().putString(remoteUrl, localPath).apply()
-        // check old version files and delete
-        checkOldVersionFiles(rootDir.absolutePath, fileName)
+        // if file is not a patch, check old version files and delete
+        if (!fileName.startsWith(H5OfflineConfig.PATCH_PRE)) {
+            checkOldVersionFiles(rootDir.absolutePath, fileName)
+        }
     }
 
     @Throws(Exception::class)
