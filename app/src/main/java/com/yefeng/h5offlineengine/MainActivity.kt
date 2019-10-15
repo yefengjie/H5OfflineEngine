@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity() {
 //        H5OfflineService.download(this, list)
         H5OfflineService.checkUpdate(
             this,
-            "http://localhost:8080/zip/demoApp_demoProject_1.0.0.zip"
+            "http://localhost:8080/config/Config.json"
         )
     }
 }

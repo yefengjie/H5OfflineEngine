@@ -7,6 +7,9 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import com.hzy.libp7zip.P7ZipApi
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import org.json.JSONArray
 import java.io.File
 import java.util.regex.Pattern
 
@@ -79,9 +82,31 @@ class H5OfflineService : IntentService("H5OfflineService") {
 
     @Throws(Exception::class)
     fun checkUpdate(url: String) {
-        val fileName = url.substring(url.lastIndexOf("/") + 1, url.length)
+        val client = OkHttpClient()
+        val request = Request.Builder().url(url).build()
+        val response = client.newCall(request).execute()
+        if (!response.isSuccessful) {
+            return
+        }
+        val configJson = JSONArray(response.body!!.string())
+        if (configJson.length() == 0) {
+            return
+        }
         // check dir is exist
-
+        val sp = H5OfflineUtil.getDownloadSp(this)
+        val downloadList = ArrayList<String>()
+        for (index in 0 until configJson.length()) {
+            val item = configJson.getString(index)
+            H5OfflineUtil.log("$index $item")
+            if (sp.contains(item)) {
+                H5OfflineUtil.log("已更新 $item")
+            } else {
+                downloadList.add(item)
+            }
+        }
+        if (downloadList.isNotEmpty()) {
+            downloadFiles(downloadList)
+        }
     }
 
     @Throws(Exception::class)
@@ -89,7 +114,6 @@ class H5OfflineService : IntentService("H5OfflineService") {
         val sp = H5OfflineUtil.getDownloadSp(this)
         val mgr = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
         for (remoteUrl in downloadList) {
-            //todo for test
             if (sp.contains(remoteUrl)) {
                 continue
             }

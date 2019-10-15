@@ -32,7 +32,7 @@ object H5OfflineUtil {
 
     fun log(msg: String, tag: String = "H5OfflineEngine") {
         if (H5OfflineEngine.debug) {
-            Log.d(tag, msg)
+            Log.e(tag, msg)
         }
     }
 
