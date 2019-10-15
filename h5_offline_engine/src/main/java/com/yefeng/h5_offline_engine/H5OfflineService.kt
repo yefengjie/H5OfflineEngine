@@ -11,12 +11,16 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONArray
 import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
+import java.io.OutputStream
 import java.util.regex.Pattern
 
 
 class H5OfflineService : IntentService("H5OfflineService") {
     companion object {
         private const val TAG = "H5OfflineService"
+        private const val ACTION_UNZIP_INNER_ZIPS = "ACTION_UNZIP_INNER_ZIPS"
         private const val ACTION_CHECK_UPDATE = "ACTION_CHECK_UPDATE"
         private const val ACTION_START_DOWNLOAD = "ACTION_START_DOWNLOAD"
         private const val ACTION_DOWNLOAD_COMPLETED = "ACTION_DOWNLOAD_COMPLETE"
@@ -56,11 +60,26 @@ class H5OfflineService : IntentService("H5OfflineService") {
             }
             context.startService(intent)
         }
+
+        fun unzipInnerH5Zips(context: Context, innerZipsPath: String) {
+            val intent = Intent(context, H5OfflineService::class.java).apply {
+                action = ACTION_UNZIP_INNER_ZIPS
+                putExtra(PARAMS, innerZipsPath)
+            }
+            context.startService(intent)
+        }
     }
 
     override fun onHandleIntent(intent: Intent?) {
         try {
             when (intent?.action) {
+                ACTION_UNZIP_INNER_ZIPS ->
+                    intent.getStringExtra(PARAMS)?.run {
+                        if (this.isEmpty()) {
+                            return
+                        }
+                        unzipInnerZips(this)
+                    }
                 ACTION_CLEAR -> clear()
                 ACTION_CHECK_UPDATE -> {
                     intent.getStringExtra(PARAMS)?.run {
@@ -88,6 +107,56 @@ class H5OfflineService : IntentService("H5OfflineService") {
             }
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
+        }
+    }
+
+    private fun unzipInnerZips(innerZipsPath: String) {
+        val files = assets.list(innerZipsPath)
+        if (files.isNullOrEmpty()) {
+            return
+        }
+        var input: InputStream? = null
+        var output: OutputStream? = null
+        try {
+            val sp = H5OfflineUtil.getDownloadSp(this)
+            for (fileName in files) {
+                val inputPath = innerZipsPath + File.separator + fileName
+                if (sp.contains(inputPath)) {
+                    continue
+                }
+                val rootDir = H5OfflineUtil.getRootDir(this).absolutePath
+                input = assets.open(inputPath)
+                val fileOutPath = rootDir + File.separator + fileName
+                val fileOut = File(fileOutPath)
+                output = FileOutputStream(fileOut)
+                input.copyTo(output)
+                // unzip file
+                val cmd = Command.getExtractCmd(fileOutPath, rootDir)
+                P7ZipApi.executeCommand(cmd)
+                H5OfflineUtil.log("unzip file:$fileName")
+                // delete file
+                val deleteResult = fileOut.delete()
+                H5OfflineUtil.log("delete file:$fileName $deleteResult")
+                // save to sp
+                sp.edit().putString(inputPath, fileOutPath).apply()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            if (null != input) {
+                try {
+                    input.close()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+            if (null != output) {
+                try {
+                    output.close()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
         }
     }
 

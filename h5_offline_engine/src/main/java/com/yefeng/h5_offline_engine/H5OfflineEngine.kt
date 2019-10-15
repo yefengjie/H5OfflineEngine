@@ -6,7 +6,7 @@ import android.webkit.WebResourceResponse
 import java.io.File
 
 /**
- * h5 offline engine
+ * innerH5OfflineZips offline engine
  *
  * @sample demo url: http://localhost:8080/demoApp/demoProject/1.0.0/offline.html?q=q
  */
@@ -16,7 +16,10 @@ object H5OfflineEngine {
     /**
      * init offline engine
      */
-    fun init(context: Context, configUrl: String) {
+    fun init(context: Context, configUrl: String, innerZipsPath: String? = null) {
+        if (!innerZipsPath.isNullOrEmpty()) {
+            H5OfflineService.unzipInnerH5Zips(context, innerZipsPath)
+        }
         H5OfflineService.checkUpdate(context, configUrl)
     }
 

@@ -78,7 +78,8 @@ class MainActivity : AppCompatActivity() {
         btnDownload.setOnClickListener {
             H5OfflineEngine.init(
                 this,
-                "http://localhost:8080/config/Config.json"
+                "http://localhost:8080/config/Config.json",
+                "innerH5OfflineZips"
             )
         }
         btnClear.setOnClickListener { H5OfflineEngine.clear(this) }
