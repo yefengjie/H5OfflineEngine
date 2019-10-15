@@ -20,7 +20,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             var hasPermission = true
             for (p in mRuntimePermissions) {
@@ -37,6 +36,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         btnDownload.setOnClickListener { startService() }
+        btnClear.setOnClickListener { H5OfflineService.clear(this) }
     }
 
     private fun startService() {

@@ -20,7 +20,16 @@ class H5OfflineService : IntentService("H5OfflineService") {
         private const val ACTION_CHECK_UPDATE = "ACTION_CHECK_UPDATE"
         private const val ACTION_START_DOWNLOAD = "ACTION_START_DOWNLOAD"
         private const val ACTION_DOWNLOAD_COMPLETED = "ACTION_DOWNLOAD_COMPLETE"
+        private const val ACTION_CLEAR = "ACTION_CLEAR"
         private const val PARAMS = "PARAMS"
+        private const val PARAMS2 = "PARAMS2"
+
+        fun clear(context: Context) {
+            val intent = Intent(context, H5OfflineService::class.java).apply {
+                action = ACTION_CLEAR
+            }
+            context.startService(intent)
+        }
 
         fun checkUpdate(context: Context, url: String) {
             val intent = Intent(context, H5OfflineService::class.java).apply {
@@ -38,10 +47,11 @@ class H5OfflineService : IntentService("H5OfflineService") {
             context.startService(intent)
         }
 
-        fun downloadCompleted(context: Context, localPath: String) {
+        fun downloadCompleted(context: Context, localPath: String, remoteUrl: String) {
             val intent = Intent(context, H5OfflineService::class.java).apply {
                 action = ACTION_DOWNLOAD_COMPLETED
                 putExtra(PARAMS, localPath)
+                putExtra(PARAMS2, remoteUrl)
             }
             context.startService(intent)
         }
@@ -50,6 +60,7 @@ class H5OfflineService : IntentService("H5OfflineService") {
     override fun onHandleIntent(intent: Intent?) {
         try {
             when (intent?.action) {
+                ACTION_CLEAR -> clear()
                 ACTION_CHECK_UPDATE -> {
                     intent.getStringExtra(PARAMS)?.run {
                         if (this.isEmpty()) {
@@ -67,11 +78,10 @@ class H5OfflineService : IntentService("H5OfflineService") {
                     }
                 }
                 ACTION_DOWNLOAD_COMPLETED -> {
-                    intent.getStringExtra(PARAMS)?.run {
-                        if (this.isEmpty()) {
-                            return
-                        }
-                        onDownloadCompleted(this)
+                    val localPath = intent.getStringExtra(PARAMS)
+                    val remoteUrl = intent.getStringExtra(PARAMS2)
+                    if (localPath.isNotEmpty() && remoteUrl.isNotEmpty()) {
+                        onDownloadCompleted(localPath, remoteUrl)
                     }
                 }
             }
@@ -138,7 +148,7 @@ class H5OfflineService : IntentService("H5OfflineService") {
     }
 
     @Throws(Exception::class)
-    private fun onDownloadCompleted(localPath: String) {
+    private fun onDownloadCompleted(localPath: String, remoteUrl: String) {
         val fileName = localPath.substring(localPath.lastIndexOf(File.separator) + 1)
         val rootDir = H5OfflineUtil.getRootDir(this)
         val file = File(rootDir, fileName)
@@ -151,13 +161,16 @@ class H5OfflineService : IntentService("H5OfflineService") {
         // delete zip
         val deleteResult = file.delete()
         H5OfflineUtil.log("delete file:$fileName $deleteResult")
+        // save to sp
+        val sp = H5OfflineUtil.getDownloadSp(this)
+        sp.edit().putString(remoteUrl, localPath).apply()
         // check old version files and delete
         checkOldVersionFiles(rootDir.absolutePath, fileName)
     }
 
     @Throws(Exception::class)
     private fun checkOldVersionFiles(rootDir: String, fileName: String) {
-        val matcher = Pattern.compile(".+\\d+(\\.\\d+){2}.+").matcher(fileName)
+        val matcher = Pattern.compile("\\d+(\\.\\d+){2}.7z").matcher(fileName)
         if (!matcher.find()) {
             return
         }
@@ -194,5 +207,13 @@ class H5OfflineService : IntentService("H5OfflineService") {
                 deleteRecursive(child)
 
         fileOrDirectory.delete()
+    }
+
+    @Throws(Exception::class)
+    fun clear() {
+        deleteRecursive(H5OfflineUtil.getRootDir(this))
+        //clear sp
+        H5OfflineUtil.getDownloadSp(this).edit().clear().apply()
+        H5OfflineUtil.log("clear all cache")
     }
 }

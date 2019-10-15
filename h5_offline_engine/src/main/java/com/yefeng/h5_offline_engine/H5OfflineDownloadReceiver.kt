@@ -29,16 +29,11 @@ class H5OfflineDownloadReceiver : BroadcastReceiver() {
                         val localPath = cursor.getString(
                             cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI)
                         )
-                        if (localPath.isNotEmpty()) {
-                            H5OfflineService.downloadCompleted(context, localPath)
-                        }
                         val remoteUrl = cursor.getString(
                             cursor.getColumnIndex(DownloadManager.COLUMN_URI)
                         )
-                        if (remoteUrl.isNotEmpty()) {
-                            // save download info
-                            val sp = H5OfflineUtil.getDownloadSp(context)
-                            sp.edit().putLong(remoteUrl, id).apply()
+                        if (localPath.isNotEmpty() && remoteUrl.isNotEmpty()) {
+                            H5OfflineService.downloadCompleted(context, localPath, remoteUrl)
                         }
                     }
                     DownloadManager.STATUS_FAILED -> H5OfflineUtil.log("download failed", mTag)
