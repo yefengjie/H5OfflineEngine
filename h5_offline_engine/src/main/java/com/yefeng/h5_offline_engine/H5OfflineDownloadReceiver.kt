@@ -9,7 +9,9 @@ import android.database.Cursor
 class H5OfflineDownloadReceiver : BroadcastReceiver() {
     private val mTag = "H5OfflineDownloadReceiver"
     override fun onReceive(context: Context?, intent: Intent?) {
-        if (null == intent || null == context || intent.action != DownloadManager.ACTION_DOWNLOAD_COMPLETE
+        if (null == intent ||
+            null == context ||
+            intent.action != DownloadManager.ACTION_DOWNLOAD_COMPLETE
         ) {
             return
         }
@@ -29,11 +31,8 @@ class H5OfflineDownloadReceiver : BroadcastReceiver() {
                         val localPath = cursor.getString(
                             cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI)
                         )
-                        val remoteUrl = cursor.getString(
-                            cursor.getColumnIndex(DownloadManager.COLUMN_URI)
-                        )
-                        if (localPath.isNotEmpty() && remoteUrl.isNotEmpty()) {
-                            H5OfflineService.downloadCompleted(context, localPath, remoteUrl)
+                        if (localPath.isNotEmpty()) {
+                            H5OfflineService.downloadCompleted(context, localPath)
                         }
                     }
                     DownloadManager.STATUS_FAILED -> H5OfflineUtil.log("download failed", mTag)

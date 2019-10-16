@@ -4,21 +4,9 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.os.Environment
 import android.util.Log
-import okhttp3.OkHttpClient
-import okhttp3.Request
 import java.io.File
 
 object H5OfflineUtil {
-    fun checkH5Config(context: Context, configPath: String) {
-        val httpClient = OkHttpClient()
-        httpClient.runCatching {
-            val request = Request.Builder().url(configPath).build()
-            val response = httpClient.newCall(request).execute()
-        }.onFailure {
-            it.printStackTrace()
-        }
-    }
-
     @Throws(Exception::class)
     fun getRootDir(context: Context): File {
         val downloadDir = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)

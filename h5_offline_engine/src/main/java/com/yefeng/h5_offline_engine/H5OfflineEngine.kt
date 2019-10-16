@@ -8,7 +8,7 @@ import java.io.File
 /**
  * innerH5OfflineZips offline engine
  *
- * @sample demo url: http://localhost:8080/demoApp/demoProject/1.0.0/offline.html?q=q
+ * demo url: http://localhost:8080/demoApp/demoProject/1.0.0/offline.html?q=q
  */
 object H5OfflineEngine {
 
