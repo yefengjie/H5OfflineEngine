@@ -16,13 +16,19 @@ object H5OfflineEngine {
     /**
      * init offline engine
      */
-    fun init(context: Context, configUrl: String, innerZipsPath: String? = null) {
+    fun init(
+        context: Context,
+        configUrl: String,
+        innerZipsPath: String? = null,
+        isDebug: Boolean = true
+    ) {
         if (!innerZipsPath.isNullOrEmpty()) {
             H5OfflineService.unzipInnerH5Zips(context, innerZipsPath)
         }
         if (configUrl.isNotEmpty()) {
             H5OfflineService.checkUpdate(context, configUrl)
         }
+        debug = isDebug
     }
 
     /**

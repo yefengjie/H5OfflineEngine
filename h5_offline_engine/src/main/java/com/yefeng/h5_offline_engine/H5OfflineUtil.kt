@@ -20,7 +20,7 @@ object H5OfflineUtil {
 
     fun log(msg: String, tag: String = "H5OfflineEngine") {
         if (H5OfflineEngine.debug) {
-            Log.e(tag, msg)
+            Log.d(tag, msg)
         }
     }
 

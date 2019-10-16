@@ -80,7 +80,8 @@ class MainActivity : AppCompatActivity() {
             H5OfflineEngine.init(
                 this,
                 "",
-                "innerH5OfflineZips"
+                "innerH5OfflineZips",
+                true
             )
         }
         btnShowInner100.setOnClickListener {
