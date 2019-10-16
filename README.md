@@ -1,4 +1,18 @@
 # Normal Mode
+## How To Use In Android
+### gradle
+implementation 'com.hzy:libp7zip:1.6.0'   
+implementation 'com.yefeng:h5_offline_engine:1.0.0'
+### init
+```Java
+H5OfflineEngine.init(
+                context,
+                "http://localhost:8080/config/H5OfflineConfig.json",
+                "innerH5OfflineZips",
+                true)
+```
+
+
 ## H5 Publish
 ### H5 file path rules
 scheme :// host / app-name / project-name / project-version / file_name.* ? query_parameters
