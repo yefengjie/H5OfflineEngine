@@ -20,7 +20,9 @@ object H5OfflineEngine {
         if (!innerZipsPath.isNullOrEmpty()) {
             H5OfflineService.unzipInnerH5Zips(context, innerZipsPath)
         }
-        H5OfflineService.checkUpdate(context, configUrl)
+        if (configUrl.isNotEmpty()) {
+            H5OfflineService.checkUpdate(context, configUrl)
+        }
     }
 
     /**

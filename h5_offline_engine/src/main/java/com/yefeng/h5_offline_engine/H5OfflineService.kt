@@ -119,6 +119,7 @@ class H5OfflineService : IntentService("H5OfflineService") {
             for (fileName in files) {
                 val inputPath = innerZipsPath + File.separator + fileName
                 if (sp.contains(fileName)) {
+                    H5OfflineUtil.log("already unzipped: $fileName", TAG)
                     continue
                 }
                 val rootDir = H5OfflineUtil.getRootDir(this).absolutePath
@@ -188,7 +189,7 @@ class H5OfflineService : IntentService("H5OfflineService") {
         for (remoteUrl in downloadList) {
             val fileName = remoteUrl.substring(remoteUrl.lastIndexOf(File.separator) + 1)
             if (sp.contains(fileName)) {
-                H5OfflineUtil.log("已更新 $fileName", TAG)
+                H5OfflineUtil.log("already updated: $fileName", TAG)
                 continue
             }
             val req = DownloadManager.Request(Uri.parse(remoteUrl))

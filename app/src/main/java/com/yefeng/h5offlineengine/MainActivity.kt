@@ -75,14 +75,36 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun init() {
-        btnDownload.setOnClickListener {
+        btnClear.setOnClickListener { H5OfflineEngine.clear(this) }
+        btnInit.setOnClickListener {
             H5OfflineEngine.init(
                 this,
-                "http://localhost:8080/config/Config.json",
+                "",
                 "innerH5OfflineZips"
             )
         }
-        btnClear.setOnClickListener { H5OfflineEngine.clear(this) }
-        btnShow.setOnClickListener { web.loadUrl("http://localhost:8080/demoApp/demoProject/1.1.0/offline.html") }
+        btnShowInner100.setOnClickListener {
+            web.loadUrl("http://localhost:8080/demoApp/demoProject/1.0.0/offline.html")
+        }
+        btnDownload110.setOnClickListener {
+            H5OfflineEngine.init(
+                this,
+                "http://localhost:8080/config/H5OfflineConfig.json",
+                "innerH5OfflineZips"
+            )
+        }
+        btnShowDownload110.setOnClickListener {
+            web.loadUrl("http://localhost:8080/demoApp/demoProject/1.1.0/offline.html")
+        }
+        btnDownloadPath.setOnClickListener {
+            H5OfflineEngine.init(
+                this,
+                "http://localhost:8080/config/H5OfflinePath.json",
+                "innerH5OfflineZips"
+            )
+        }
+        btnShowPath.setOnClickListener {
+            web.loadUrl("http://localhost:8080/demoApp/demoProject/1.1.0/offline.html")
+        }
     }
 }
