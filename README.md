@@ -6,10 +6,10 @@ implementation 'com.yefeng:h5_offline_engine:1.0.0'
 ### init
 ```Java
 H5OfflineEngine.init(
-                context,
-                "http://localhost:8080/config/H5OfflineConfig.json",
-                "innerH5OfflineZips",
-                true)
+                context, //context
+                "http://localhost:8080/config/H5OfflineConfig.json", //online config
+                "innerH5OfflineZips", // inner zip assets path 
+                true) // show debug log
 ```
 
 
