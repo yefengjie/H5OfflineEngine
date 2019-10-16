@@ -6,43 +6,50 @@ scheme :// host / app-name / project-name / project-version / file_name.* ? quer
 example:  http://localhost:8080/demoApp/demoProject/1.0.0/offline.html
 
 ### auto release process
-package project -> generate zip file -> publish offline package -> auto generate config file
+package project -> generate 7z file -> publish offline package -> auto generate config file
+### zip file rules
+package all remote path to zip  
+examples:  
+localhost..8080/demoApp/demoProject/1.0.0/files.*  
+localhost/demoApp/demoProject/1.0.0/files.*
 #### zip file name rules
-app-name\_project-name\_project-version.zip
+host\_app-name\_project-name\_project-version.7z  
+if port is not 80  
+host..port\_app-name\_project-name\_project-version.7z 
 
-example:demoApp_demoProject_1.0.0.zip
+example:  
+localhost\_demoApp\_demoProject\_1.0.0.7z  
+localhost..8080\_demoApp\_demoProject\_1.1.0.7z
 #### H5 config file json
 ```Java
-{
-   "appName": "demoApp",
-   "projects": [
-      {
-         "name": "demoProject",
-         "version": "1.0.0",
-         "zipPath": "http://localhost:8080/zip/demoApp_demoProject_1.0.0.zip"
-      }
-   ],
-   "otherFiles": {
-      "version": "0.0.1",
-      "paths": [
-         "http://localhost:8080/demoApp/otherFiles/otherFiles.js"
-      ]
-   }
-}
+[
+	"http://localhost:8080/zip/localhost..8080_demoApp_demoProject_1.1.0.7z",
+	"http://localhost:8080/zip/path/patch-localhost..8080_demoApp_demoProject_1.1.0.7z"
+]
 ```
 ## Native Use
 ### auto update process
-app launch -> fetch H5 config -> diff local config file, check if need update -> background download -> unzip to special path
+app launch -> fetch H5 config -> check if need download -> background download -> unzip to special path -> delete if has old version dirs
 #### offline files path rule
-h5OfflineEngine/projectName/projectVersion/files.*
+h5OfflineEngine/localhost..8080/appName/projectName/projectVersion/files.*
 ### intercept resources
-WebViewClient -> shouldInterceptRequest -> check project,version,files -> replace resources with offline files
+WebViewClient -> shouldInterceptRequest -> check if has offline files -> replace resources with offline files
 ### package to Android apk
 put h5 offline zip to android assets -> unzip to special path when app launch
 
 
 # Increment Update Mode
-todo...
+### 1. H5 package patch 7z files
+file name start with patch-  
+file name example: patch-localhost..8080_demoApp_demoProject_1.1.0.7z
+### 2. add patch 7z files to config
+```Java
+[
+	"http://localhost:8080/zip/localhost..8080_demoApp_demoProject_1.1.0.7z",
+	"http://localhost:8080/zip/path/patch-localhost..8080_demoApp_demoProject_1.1.0.7z"
+]
+```
+### 3. native download and unzip
 
 # Test
 open h5demo fold, and sh server.sh to setup a simple h5 website
