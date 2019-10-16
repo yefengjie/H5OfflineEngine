@@ -55,6 +55,7 @@ object H5OfflineEngine {
             val pathSegments = uri.pathSegments
             var localPath = H5OfflineUtil.getRootDir(context).absolutePath + File.separator + host
             if (port != 80) {
+                // because file name is not support :   so we use .. to replace it
                 localPath += "..$port"
             }
             for (segment in pathSegments) {
