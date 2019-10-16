@@ -1,3 +1,11 @@
+# Offline Advantages
+## Save about 20 times the flow
+package all h5 static resource into 7z file, save a lot of flow.
+in my test, this will save about 23.33 times the flow
+## Without network and faster
+## easy to use
+## online,offline all support
+this will allow some resource from local, the others from server
 # Normal Mode
 ## How To Use In Android
 ### gradle
@@ -10,6 +18,38 @@ H5OfflineEngine.init(
                 "http://localhost:8080/config/H5OfflineConfig.json", //online config
                 "innerH5OfflineZips", // inner zip assets path 
                 true) // show debug log
+
+// replace resource in shouldInterceptRequest in webViewClient
+web.webViewClient = object : WebViewClient() {
+            override fun shouldInterceptRequest(
+                view: WebView?,
+                url: String?
+            ): WebResourceResponse? {
+                if (!url.isNullOrEmpty()) {
+                    return offlineInterceptResource(Uri.parse(url))
+                }
+                return super.shouldInterceptRequest(view, url)
+            }
+
+            override fun shouldInterceptRequest(
+                view: WebView?,
+                request: WebResourceRequest?
+            ): WebResourceResponse? {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
+                    null != request
+                ) {
+                    offlineInterceptResource(request.url)
+                }
+                return super.shouldInterceptRequest(view, request)
+            }
+        }
+
+    /**
+     * replace resource with offline files
+     */
+    private fun offlineInterceptResource(url: Uri): WebResourceResponse? {
+        return H5OfflineEngine.interceptResource(url, this)
+    }
 ```
 
 
