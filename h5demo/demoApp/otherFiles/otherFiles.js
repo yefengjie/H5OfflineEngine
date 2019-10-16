@@ -1,1 +1,0 @@
-document.getElementById('other_js').innerHTML = '<div>Offline other js</div>';

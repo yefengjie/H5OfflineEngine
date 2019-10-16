@@ -1,0 +1,1 @@
+document.getElementById('js_patch').innerHTML = '<div>patch js Demo</div>';

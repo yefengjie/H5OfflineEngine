@@ -1,13 +1,4 @@
-{
-  "appName": "demoApp",
-  "projects": [
-    {
-      "name": "demoProject",
-      "version": "1.0.0",
-      "zipPath": "http://localhost:8080/zip/demoApp_demoProject_1.0.0.zip"
-    }
-  ],
-  "otherFiles": [
-    "http://localhost:8080/demoApp/otherFiles/otherFiles.js"
-  ]
-}
+[
+  "http://localhost:8080/zip/localhost..8080_demoApp_demoProject_1.1.0.7z",
+  "http://localhost:8080/zip/path/patch-localhost..8080_demoApp_demoProject_1.1.0.7z"
+]
