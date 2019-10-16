@@ -4,8 +4,8 @@ H5OfflineEngine is a library for Android developers to open H5 pages in offline 
 package all h5 static resource into 7z file, save a lot of flow.
 in my test, this will save about 23.33 times the flow
 #### Without network and faster
-#### easy to use
-#### online,offline all support
+#### Easy to use
+#### Online,offline all support
 this will allow some resource from local, the others from server
 # Normal Mode
 ## How To Use In Android
