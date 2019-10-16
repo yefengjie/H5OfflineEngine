@@ -15,6 +15,10 @@ object H5OfflineEngine {
     var debug = true
     /**
      * init offline engine
+     * @param context context
+     * @param configUrl online config url
+     * @param innerZipsPath inner zips path, package in app assets dir
+     * @param isDebug show debug log
      */
     fun init(
         context: Context,
@@ -38,6 +42,9 @@ object H5OfflineEngine {
         H5OfflineService.clear(context)
     }
 
+    /**
+     * intercept resource and replace it with local files
+     */
     fun interceptResource(uri: Uri?, context: Context): WebResourceResponse? {
         if (uri == null) {
             return null

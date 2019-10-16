@@ -70,6 +70,9 @@ class MainActivity : AppCompatActivity() {
         web.settings.javaScriptEnabled = true
     }
 
+    /**
+     * replace resource with offline files
+     */
     private fun offlineInterceptResource(url: Uri): WebResourceResponse? {
         return H5OfflineEngine.interceptResource(url, this)
     }
@@ -78,10 +81,10 @@ class MainActivity : AppCompatActivity() {
         btnClear.setOnClickListener { H5OfflineEngine.clear(this) }
         btnInit.setOnClickListener {
             H5OfflineEngine.init(
-                this,
-                "",
-                "innerH5OfflineZips",
-                true
+                this, // context
+                "", // online config
+                "innerH5OfflineZips", // inner zip assets path
+                true // show debug log
             )
         }
         btnShowInner100.setOnClickListener {

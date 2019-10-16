@@ -6,6 +6,9 @@ import android.content.Context
 import android.content.Intent
 import android.database.Cursor
 
+/**
+ * h5 offline download receiver, receiver download complete broadcast
+ */
 class H5OfflineDownloadReceiver : BroadcastReceiver() {
     private val mTag = "H5OfflineDownloadReceiver"
     override fun onReceive(context: Context?, intent: Intent?) {

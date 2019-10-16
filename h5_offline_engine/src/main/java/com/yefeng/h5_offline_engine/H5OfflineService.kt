@@ -27,6 +27,9 @@ class H5OfflineService : IntentService("H5OfflineService") {
         private const val ACTION_CLEAR = "ACTION_CLEAR"
         private const val PARAMS = "PARAMS"
 
+        /**
+         * clear local offline files
+         */
         fun clear(context: Context) {
             val intent = Intent(context, H5OfflineService::class.java).apply {
                 action = ACTION_CLEAR
@@ -34,6 +37,9 @@ class H5OfflineService : IntentService("H5OfflineService") {
             context.startService(intent)
         }
 
+        /**
+         * check if need to update local offline files
+         */
         fun checkUpdate(context: Context, url: String) {
             val intent = Intent(context, H5OfflineService::class.java).apply {
                 action = ACTION_CHECK_UPDATE
@@ -42,6 +48,9 @@ class H5OfflineService : IntentService("H5OfflineService") {
             context.startService(intent)
         }
 
+        /**
+         * download remote zip files
+         */
         @Suppress("unused")
         fun download(context: Context, list: ArrayList<String>) {
             val intent = Intent(context, H5OfflineService::class.java).apply {
@@ -51,6 +60,9 @@ class H5OfflineService : IntentService("H5OfflineService") {
             context.startService(intent)
         }
 
+        /**
+         * on zip files download completed
+         */
         fun downloadCompleted(context: Context, localPath: String) {
             val intent = Intent(context, H5OfflineService::class.java).apply {
                 action = ACTION_DOWNLOAD_COMPLETED
@@ -59,6 +71,9 @@ class H5OfflineService : IntentService("H5OfflineService") {
             context.startService(intent)
         }
 
+        /**
+         * unzip inner h5 file to offline file path
+         */
         fun unzipInnerH5Zips(context: Context, innerZipsPath: String) {
             val intent = Intent(context, H5OfflineService::class.java).apply {
                 action = ACTION_UNZIP_INNER_ZIPS
@@ -107,6 +122,9 @@ class H5OfflineService : IntentService("H5OfflineService") {
         }
     }
 
+    /**
+     * unzip inner h5 file to offline file path
+     */
     private fun unzipInnerZips(innerZipsPath: String) {
         val files = assets.list(innerZipsPath)
         if (files.isNullOrEmpty()) {
@@ -158,6 +176,9 @@ class H5OfflineService : IntentService("H5OfflineService") {
         }
     }
 
+    /**
+     * check if need to update local offline files
+     */
     @Throws(Exception::class)
     fun checkUpdate(url: String) {
         val client = OkHttpClient()
@@ -182,6 +203,9 @@ class H5OfflineService : IntentService("H5OfflineService") {
         }
     }
 
+    /**
+     * download remote zip files
+     */
     @Throws(Exception::class)
     fun downloadFiles(downloadList: ArrayList<String>) {
         val sp = H5OfflineUtil.getDownloadSp(this)
@@ -211,6 +235,9 @@ class H5OfflineService : IntentService("H5OfflineService") {
         }
     }
 
+    /**
+     * on zip files download completed, unzip files
+     */
     @Throws(Exception::class)
     private fun onDownloadCompleted(localPath: String) {
         val fileName = localPath.substring(localPath.lastIndexOf(File.separator) + 1)
@@ -234,6 +261,9 @@ class H5OfflineService : IntentService("H5OfflineService") {
         }
     }
 
+    /**
+     * check if has old version files and delete it
+     */
     @Throws(Exception::class)
     private fun checkOldVersionFiles(rootDir: String, fileName: String) {
         val matcher = Pattern.compile("\\d+(\\.\\d+){2}.7z").matcher(fileName)
@@ -266,6 +296,9 @@ class H5OfflineService : IntentService("H5OfflineService") {
         }
     }
 
+    /**
+     * recursive delete dir
+     */
     @Throws(Exception::class)
     fun deleteRecursive(fileOrDirectory: File) {
         if (fileOrDirectory.isDirectory)
@@ -275,6 +308,9 @@ class H5OfflineService : IntentService("H5OfflineService") {
         fileOrDirectory.delete()
     }
 
+    /**
+     * clear local offline files
+     */
     @Throws(Exception::class)
     fun clear() {
         deleteRecursive(H5OfflineUtil.getRootDir(this))
