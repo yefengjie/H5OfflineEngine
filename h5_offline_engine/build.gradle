@@ -34,6 +34,5 @@ dependencies {
     compileOnly 'androidx.core:core-ktx:1.1.0'
 
     compileOnly 'com.squareup.okhttp3:okhttp:4.2.0'
-    implementation 'com.hzy:libp7zip:1.6.0'
-    compileOnly 'com.android.support:multidex:1.0.3'
+    compileOnly 'com.hzy:libp7zip:1.6.0'
 }
