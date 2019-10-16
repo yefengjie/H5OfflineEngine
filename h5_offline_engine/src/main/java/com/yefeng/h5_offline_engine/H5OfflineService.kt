@@ -170,16 +170,11 @@ class H5OfflineService : IntentService("H5OfflineService") {
             return
         }
         // check dir is exist
-        val sp = H5OfflineUtil.getDownloadSp(this)
         val downloadList = ArrayList<String>()
         for (index in 0 until configJson.length()) {
             val item = configJson.getString(index)
             H5OfflineUtil.log("$index $item", TAG)
-            if (sp.contains(item)) {
-                H5OfflineUtil.log("已更新 $item", TAG)
-            } else {
-                downloadList.add(item)
-            }
+            downloadList.add(item)
         }
         if (downloadList.isNotEmpty()) {
             downloadFiles(downloadList)
@@ -191,8 +186,9 @@ class H5OfflineService : IntentService("H5OfflineService") {
         val sp = H5OfflineUtil.getDownloadSp(this)
         val mgr = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
         for (remoteUrl in downloadList) {
-            val fileName = remoteUrl.substring(remoteUrl.lastIndexOf(File.separator))
+            val fileName = remoteUrl.substring(remoteUrl.lastIndexOf(File.separator) + 1)
             if (sp.contains(fileName)) {
+                H5OfflineUtil.log("已更新 $fileName", TAG)
                 continue
             }
             val req = DownloadManager.Request(Uri.parse(remoteUrl))
