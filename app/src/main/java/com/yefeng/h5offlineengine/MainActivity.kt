@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
                 url: String?
             ): WebResourceResponse? {
                 if (!url.isNullOrEmpty()) {
-                    return offlineInterceptResource(Uri.parse(url))
+                    return H5OfflineEngine.interceptResource(Uri.parse(url), applicationContext)
                 }
                 return super.shouldInterceptRequest(view, url)
             }
@@ -61,20 +61,13 @@ class MainActivity : AppCompatActivity() {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
                     null != request
                 ) {
-                    offlineInterceptResource(request.url)
+                    return H5OfflineEngine.interceptResource(request.url, applicationContext)
                 }
                 return super.shouldInterceptRequest(view, request)
             }
         }
         web.webChromeClient = WebChromeClient()
         web.settings.javaScriptEnabled = true
-    }
-
-    /**
-     * replace resource with offline files
-     */
-    private fun offlineInterceptResource(url: Uri): WebResourceResponse? {
-        return H5OfflineEngine.interceptResource(url, this)
     }
 
     private fun init() {
