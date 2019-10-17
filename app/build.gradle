@@ -37,4 +37,6 @@ dependencies {
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'com.hzy:libp7zip:1.6.0'
     implementation 'com.yefeng:h5_offline_engine:1.0.0'
+    implementation 'com.github.bumptech.glide:glide:4.10.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.10.0'
 }

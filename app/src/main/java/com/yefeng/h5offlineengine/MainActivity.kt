@@ -5,11 +5,14 @@ import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.webkit.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
+import com.bumptech.glide.Glide
 import com.yefeng.h5_offline_engine.H5OfflineEngine
+import com.yefeng.h5_offline_engine.H5OfflineUtil
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -43,12 +46,21 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("SetJavaScriptEnabled")
     private fun initWeb() {
+        Log.e("haha", Thread.currentThread().name)
         web.webViewClient = object : WebViewClient() {
             override fun shouldInterceptRequest(
                 view: WebView?,
                 url: String?
             ): WebResourceResponse? {
+                H5OfflineUtil.log(Thread.currentThread().name, "shouldInterceptRequest")
                 if (!url.isNullOrEmpty()) {
+                    if (url.lastIndexOf(".jpg") > 0) {
+                        return WebResourceResponse(
+                            this@MainActivity.contentResolver.getType(Uri.parse(url)),
+                            "UTF-8",
+                            Glide.with(this@MainActivity).asFile().load(url).submit().get().inputStream()
+                        )
+                    }
                     return H5OfflineEngine.interceptResource(Uri.parse(url), applicationContext)
                 }
                 return super.shouldInterceptRequest(view, url)
@@ -58,9 +70,17 @@ class MainActivity : AppCompatActivity() {
                 view: WebView?,
                 request: WebResourceRequest?
             ): WebResourceResponse? {
+                H5OfflineUtil.log(Thread.currentThread().name, "shouldInterceptRequest")
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
                     null != request
                 ) {
+                    if (request.url.toString().lastIndexOf(".jpg") > 0) {
+                        return WebResourceResponse(
+                            this@MainActivity.contentResolver.getType(request.url),
+                            "UTF-8",
+                            Glide.with(this@MainActivity).asFile().load(request.url).submit().get().inputStream()
+                        )
+                    }
                     return H5OfflineEngine.interceptResource(request.url, applicationContext)
                 }
                 return super.shouldInterceptRequest(view, request)
