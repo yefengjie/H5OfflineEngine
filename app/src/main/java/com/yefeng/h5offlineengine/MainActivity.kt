@@ -91,7 +91,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun init() {
-        btnClear.setOnClickListener { H5OfflineEngine.clear(this) }
+        btnClear.setOnClickListener {
+            H5OfflineEngine.clear(this)
+        }
         btnInit.setOnClickListener {
             H5OfflineEngine.init(
                 this, // context

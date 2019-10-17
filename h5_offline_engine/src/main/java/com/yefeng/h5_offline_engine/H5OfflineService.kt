@@ -133,10 +133,10 @@ class H5OfflineService : IntentService("H5OfflineService") {
         var input: InputStream? = null
         var output: OutputStream? = null
         try {
-            val sp = H5OfflineUtil.getDownloadSp(this)
+            val downloadFiles = H5OfflineUtil.getDownloadFiles(this)
             for (fileName in files) {
                 val inputPath = innerZipsPath + File.separator + fileName
-                if (sp.contains(fileName)) {
+                if (downloadFiles.contains(fileName)) {
                     H5OfflineUtil.log("already unzipped: $fileName", TAG)
                     continue
                 }
@@ -154,7 +154,7 @@ class H5OfflineService : IntentService("H5OfflineService") {
                 val deleteResult = fileOut.delete()
                 H5OfflineUtil.log("delete file:$fileName $deleteResult", TAG)
                 // save to sp
-                sp.edit().putString(fileName, fileOutPath).apply()
+                H5OfflineUtil.putDownloadFile(this, fileName)
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -208,11 +208,11 @@ class H5OfflineService : IntentService("H5OfflineService") {
      */
     @Throws(Exception::class)
     fun downloadFiles(downloadList: ArrayList<String>) {
-        val sp = H5OfflineUtil.getDownloadSp(this)
+        val downloadedFiles = H5OfflineUtil.getDownloadFiles(this)
         val mgr = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
         for (remoteUrl in downloadList) {
             val fileName = remoteUrl.substring(remoteUrl.lastIndexOf(File.separator) + 1)
-            if (sp.contains(fileName)) {
+            if (downloadedFiles.contains(fileName)) {
                 H5OfflineUtil.log("already updated: $fileName", TAG)
                 continue
             }
@@ -253,8 +253,8 @@ class H5OfflineService : IntentService("H5OfflineService") {
         val deleteResult = file.delete()
         H5OfflineUtil.log("delete file:$fileName $deleteResult", TAG)
         // save to sp
-        val sp = H5OfflineUtil.getDownloadSp(this)
-        sp.edit().putString(fileName, localPath).apply()
+        H5OfflineUtil.putDownloadFile(this, fileName)
+
         // if file is not a patch, check old version files and delete
         if (!fileName.startsWith(H5OfflineConfig.INCREMENT_PRE)) {
             checkOldVersionFiles(rootDir.absolutePath, fileName)
@@ -315,7 +315,7 @@ class H5OfflineService : IntentService("H5OfflineService") {
     fun clear() {
         deleteRecursive(H5OfflineUtil.getRootDir(this))
         //clear sp
-        H5OfflineUtil.getDownloadSp(this).edit().clear().apply()
+        H5OfflineUtil.clearDownloadSp(this)
         H5OfflineUtil.log("clear all cache", TAG)
     }
 }
