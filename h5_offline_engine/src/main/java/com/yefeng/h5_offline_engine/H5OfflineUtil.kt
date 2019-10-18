@@ -2,9 +2,11 @@ package com.yefeng.h5_offline_engine
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.os.Environment
 import android.util.Log
 import java.io.File
+
 
 object H5OfflineUtil {
     /**
@@ -34,7 +36,18 @@ object H5OfflineUtil {
      * download files sp, used to check files is downloaded
      */
     private fun getDownloadSp(context: Context): SharedPreferences {
-        return context.getSharedPreferences("h5_offline_engine_downloaded", Context.MODE_PRIVATE)
+        var version = BuildConfig.VERSION_NAME
+        try {
+            val pInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+            version = pInfo.versionName
+        } catch (e: PackageManager.NameNotFoundException) {
+            e.printStackTrace()
+        }
+        log("App Version:$version")
+        return context.getSharedPreferences(
+            "h5_offline_engine_downloaded_${version}",
+            Context.MODE_PRIVATE
+        )
     }
 
     /**
@@ -47,9 +60,12 @@ object H5OfflineUtil {
     /**
      * get download files
      */
-    fun getDownloadedFiles(context: Context): Set<String> {
+    fun getDownloadedFiles(context: Context): MutableSet<String> {
         val sp = getDownloadSp(context)
-        val set = sp.getStringSet(BuildConfig.VERSION_NAME, null) ?: HashSet()
+        val set = HashSet<String>()
+        if (null != sp.all) {
+            set.addAll(sp.all.keys)
+        }
         log("downloaded list:$set")
         return set
     }
@@ -59,10 +75,6 @@ object H5OfflineUtil {
      */
     fun putDownloadedFile(context: Context, fileName: String) {
         val sp = getDownloadSp(context)
-        val fileSet = getDownloadedFiles(context)
-        fileSet.plus(fileName)
-        sp.edit().putStringSet(BuildConfig.VERSION_NAME, fileSet).apply()
-        val set = sp.getStringSet(BuildConfig.VERSION_NAME, null) ?: HashSet()
-        log("downloaded list:$set")
+        sp.edit().putBoolean(fileName, false).apply()
     }
 }

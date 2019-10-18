@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.webkit.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -17,7 +16,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
-    private val mHost = "10.250.46.189:8080"
+    private val mHost = "localhost:8080"
 
     private val mRuntimePermissions = arrayOf(
         Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -48,7 +47,6 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("SetJavaScriptEnabled")
     private fun initWeb() {
-        Log.e("haha", Thread.currentThread().name)
         web.webViewClient = object : WebViewClient() {
             override fun shouldInterceptRequest(
                 view: WebView?,
@@ -118,5 +116,12 @@ class MainActivity : AppCompatActivity() {
         btnShowPath.setOnClickListener {
             web.loadUrl("http://$mHost/demoApp/demoProject/1.1.0/offline.html")
         }
+    }
+
+    override fun onDestroy() {
+        web.clearHistory()
+        web.clearCache(true)
+        web.destroy()
+        super.onDestroy()
     }
 }

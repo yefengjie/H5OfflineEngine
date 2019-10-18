@@ -1,6 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'com.jfrog.bintray'
-version = "1.0.1"
+version = "1.1.0"
 // publish
 //tasks.getByPath(":src:javadocRelease").enabled = false
 def siteUrl = 'https://github.com/yefengjie/H5OfflineEngine'    // project homepage

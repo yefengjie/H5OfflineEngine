@@ -122,6 +122,10 @@ class H5OfflineService : IntentService("H5OfflineService") {
                 val fileOut = File(fileOutPath)
                 output = FileOutputStream(fileOut)
                 input.copyTo(output)
+                // if file is not a patch, check old version files and delete
+                if (!fileName.startsWith(H5OfflineConfig.INCREMENT_PRE)) {
+                    checkOldVersionFiles(rootDir, fileName)
+                }
                 // unzip file
                 val cmd = Command7z.getExtractCmd(fileOutPath, rootDir)
                 P7ZipApi.executeCommand(cmd)
@@ -235,7 +239,7 @@ class H5OfflineService : IntentService("H5OfflineService") {
             return
         }
         deleteRecursive(versionParent)
-        H5OfflineUtil.log("delete dir:$versionParent.absolutePath", TAG)
+        H5OfflineUtil.log("delete dir:${versionParent.absolutePath}", TAG)
     }
 
     /**

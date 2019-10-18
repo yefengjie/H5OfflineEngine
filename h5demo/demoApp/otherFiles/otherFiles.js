@@ -1,0 +1,1 @@
+document.getElementById('other_js').innerHTML = '<div>online1 other js</div>';
