@@ -26,7 +26,7 @@ object H5OfflineUtil {
      */
     fun log(msg: String, tag: String = "H5OfflineEngine") {
         if (H5OfflineEngine.debug) {
-            Log.d(tag, msg)
+            Log.e(tag, msg)
         }
     }
 
@@ -47,18 +47,22 @@ object H5OfflineUtil {
     /**
      * get download files
      */
-    fun getDownloadFiles(context: Context): Set<String> {
+    fun getDownloadedFiles(context: Context): Set<String> {
         val sp = getDownloadSp(context)
-        return sp.getStringSet(BuildConfig.VERSION_NAME, null) ?: HashSet()
+        val set = sp.getStringSet(BuildConfig.VERSION_NAME, null) ?: HashSet()
+        log("downloaded list:$set")
+        return set
     }
 
     /**
      * put download file to sp by app version
      */
-    fun putDownloadFile(context: Context, fileName: String) {
+    fun putDownloadedFile(context: Context, fileName: String) {
         val sp = getDownloadSp(context)
-        val fileSet = getDownloadFiles(context)
-        fileSet.plusElement(fileName)
+        val fileSet = getDownloadedFiles(context)
+        fileSet.plus(fileName)
         sp.edit().putStringSet(BuildConfig.VERSION_NAME, fileSet).apply()
+        val set = sp.getStringSet(BuildConfig.VERSION_NAME, null) ?: HashSet()
+        log("downloaded list:$set")
     }
 }

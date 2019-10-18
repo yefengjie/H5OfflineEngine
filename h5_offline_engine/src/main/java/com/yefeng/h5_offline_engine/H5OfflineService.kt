@@ -7,9 +7,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import com.hzy.libp7zip.P7ZipApi
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import org.json.JSONArray
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
@@ -21,7 +18,6 @@ class H5OfflineService : IntentService("H5OfflineService") {
     companion object {
         private const val TAG = "H5OfflineService"
         private const val ACTION_UNZIP_INNER_ZIPS = "ACTION_UNZIP_INNER_ZIPS"
-        private const val ACTION_CHECK_UPDATE = "ACTION_CHECK_UPDATE"
         private const val ACTION_START_DOWNLOAD = "ACTION_START_DOWNLOAD"
         private const val ACTION_DOWNLOAD_COMPLETED = "ACTION_DOWNLOAD_COMPLETE"
         private const val ACTION_CLEAR = "ACTION_CLEAR"
@@ -38,20 +34,8 @@ class H5OfflineService : IntentService("H5OfflineService") {
         }
 
         /**
-         * check if need to update local offline files
-         */
-        fun checkUpdate(context: Context, url: String) {
-            val intent = Intent(context, H5OfflineService::class.java).apply {
-                action = ACTION_CHECK_UPDATE
-                putExtra(PARAMS, url)
-            }
-            context.startService(intent)
-        }
-
-        /**
          * download remote zip files
          */
-        @Suppress("unused")
         fun download(context: Context, list: ArrayList<String>) {
             val intent = Intent(context, H5OfflineService::class.java).apply {
                 action = ACTION_START_DOWNLOAD
@@ -94,14 +78,6 @@ class H5OfflineService : IntentService("H5OfflineService") {
                         unzipInnerZips(this)
                     }
                 ACTION_CLEAR -> clear()
-                ACTION_CHECK_UPDATE -> {
-                    intent.getStringExtra(PARAMS)?.run {
-                        if (this.isEmpty()) {
-                            return
-                        }
-                        checkUpdate(this)
-                    }
-                }
                 ACTION_START_DOWNLOAD -> {
                     intent.getStringArrayListExtra(PARAMS)?.run {
                         if (this.isEmpty()) {
@@ -133,10 +109,10 @@ class H5OfflineService : IntentService("H5OfflineService") {
         var input: InputStream? = null
         var output: OutputStream? = null
         try {
-            val downloadFiles = H5OfflineUtil.getDownloadFiles(this)
+            val downloadedFiles = H5OfflineUtil.getDownloadedFiles(this)
             for (fileName in files) {
                 val inputPath = innerZipsPath + File.separator + fileName
-                if (downloadFiles.contains(fileName)) {
+                if (downloadedFiles.contains(fileName)) {
                     H5OfflineUtil.log("already unzipped: $fileName", TAG)
                     continue
                 }
@@ -150,11 +126,11 @@ class H5OfflineService : IntentService("H5OfflineService") {
                 val cmd = Command7z.getExtractCmd(fileOutPath, rootDir)
                 P7ZipApi.executeCommand(cmd)
                 H5OfflineUtil.log("unzip file:$fileName", TAG)
+                // save to sp
+                H5OfflineUtil.putDownloadedFile(this, fileName)
                 // delete file
                 val deleteResult = fileOut.delete()
                 H5OfflineUtil.log("delete file:$fileName $deleteResult", TAG)
-                // save to sp
-                H5OfflineUtil.putDownloadFile(this, fileName)
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -176,39 +152,13 @@ class H5OfflineService : IntentService("H5OfflineService") {
         }
     }
 
-    /**
-     * check if need to update local offline files
-     */
-    @Throws(Exception::class)
-    fun checkUpdate(url: String) {
-        val client = OkHttpClient()
-        val request = Request.Builder().url(url).build()
-        val response = client.newCall(request).execute()
-        if (!response.isSuccessful || response.body == null) {
-            return
-        }
-        val configJson = JSONArray(response.body!!.string())
-        if (configJson.length() == 0) {
-            return
-        }
-        // check dir is exist
-        val downloadList = ArrayList<String>()
-        for (index in 0 until configJson.length()) {
-            val item = configJson.getString(index)
-            H5OfflineUtil.log("$index $item", TAG)
-            downloadList.add(item)
-        }
-        if (downloadList.isNotEmpty()) {
-            downloadFiles(downloadList)
-        }
-    }
 
     /**
      * download remote zip files
      */
     @Throws(Exception::class)
     fun downloadFiles(downloadList: ArrayList<String>) {
-        val downloadedFiles = H5OfflineUtil.getDownloadFiles(this)
+        val downloadedFiles = H5OfflineUtil.getDownloadedFiles(this)
         val mgr = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
         for (remoteUrl in downloadList) {
             val fileName = remoteUrl.substring(remoteUrl.lastIndexOf(File.separator) + 1)
@@ -245,20 +195,22 @@ class H5OfflineService : IntentService("H5OfflineService") {
         val file = File(rootDir, fileName)
         val filePath = file.absolutePath
         H5OfflineUtil.log("download success:$filePath", TAG)
-        // unzip file
-        val cmd = Command7z.getExtractCmd(filePath, rootDir.absolutePath)
-        P7ZipApi.executeCommand(cmd)
-        H5OfflineUtil.log("unzip file:$fileName", TAG)
-        // delete zip
-        val deleteResult = file.delete()
-        H5OfflineUtil.log("delete file:$fileName $deleteResult", TAG)
-        // save to sp
-        H5OfflineUtil.putDownloadFile(this, fileName)
-
         // if file is not a patch, check old version files and delete
         if (!fileName.startsWith(H5OfflineConfig.INCREMENT_PRE)) {
             checkOldVersionFiles(rootDir.absolutePath, fileName)
         }
+        // unzip file
+        val cmd = Command7z.getExtractCmd(filePath, rootDir.absolutePath)
+        P7ZipApi.executeCommand(cmd)
+        H5OfflineUtil.log("unzip file:$fileName", TAG)
+        // save to sp
+        H5OfflineUtil.putDownloadedFile(this, fileName)
+        // delete zip
+        val deleteResult = file.delete()
+        H5OfflineUtil.log("delete file:$fileName $deleteResult", TAG)
+        // send offline files updated broadcast
+        // you can do something after you receiver this broadcast
+        sendBroadcast(Intent(H5OfflineConfig.BROADCAST_OFFLINE_FILES_UPDATED))
     }
 
     /**
@@ -274,7 +226,6 @@ class H5OfflineService : IntentService("H5OfflineService") {
         if (dirs.isNullOrEmpty() || dirs.size <= 1) {
             return
         }
-        val versionDir = dirs[dirs.size - 1].substring(0, dirs[dirs.size - 1].lastIndexOf("."))
         var versionParentDir = ""
         for (index in 0 until dirs.size - 1) {
             versionParentDir += dirs[index] + File.separator
@@ -283,17 +234,8 @@ class H5OfflineService : IntentService("H5OfflineService") {
         if (!versionParent.exists()) {
             return
         }
-        val children = versionParent.listFiles()
-        if (children.isNullOrEmpty() || children.size <= 1) {
-            return
-        }
-        H5OfflineUtil.log("version dir:$versionDir", TAG)
-        for (child in children) {
-            if (child.name != versionDir) {
-                H5OfflineUtil.log("delete dir:$child.absolutePath", TAG)
-                deleteRecursive(child)
-            }
-        }
+        deleteRecursive(versionParent)
+        H5OfflineUtil.log("delete dir:$versionParent.absolutePath", TAG)
     }
 
     /**

@@ -17,6 +17,8 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
+    private val mHost = "10.250.46.189:8080"
+
     private val mRuntimePermissions = arrayOf(
         Manifest.permission.READ_EXTERNAL_STORAGE,
         Manifest.permission.WRITE_EXTERNAL_STORAGE,
@@ -97,33 +99,24 @@ class MainActivity : AppCompatActivity() {
         btnInit.setOnClickListener {
             H5OfflineEngine.init(
                 this, // context
-                "", // online config
                 "innerH5OfflineZips", // inner zip assets path
                 true // show debug log
             )
         }
         btnShowInner100.setOnClickListener {
-            web.loadUrl("http://localhost:8080/demoApp/demoProject/1.0.0/offline.html")
+            web.loadUrl("http://$mHost/demoApp/demoProject/1.0.0/offline.html")
         }
         btnDownload110.setOnClickListener {
-            H5OfflineEngine.init(
-                this,
-                "http://localhost:8080/config/H5OfflineConfig.json",
-                "innerH5OfflineZips"
-            )
+            TestUtil.checkUpdate(this, "http://$mHost/config/H5OfflineConfig.json")
         }
         btnShowDownload110.setOnClickListener {
-            web.loadUrl("http://localhost:8080/demoApp/demoProject/1.1.0/offline.html")
+            web.loadUrl("http://$mHost/demoApp/demoProject/1.1.0/offline.html")
         }
         btnDownloadPath.setOnClickListener {
-            H5OfflineEngine.init(
-                this,
-                "http://localhost:8080/config/H5OfflinePath.json",
-                "innerH5OfflineZips"
-            )
+            TestUtil.checkUpdate(this, "http://$mHost/config/H5OfflinePath.json")
         }
         btnShowPath.setOnClickListener {
-            web.loadUrl("http://localhost:8080/demoApp/demoProject/1.1.0/offline.html")
+            web.loadUrl("http://$mHost/demoApp/demoProject/1.1.0/offline.html")
         }
     }
 }

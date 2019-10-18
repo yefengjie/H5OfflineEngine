@@ -16,23 +16,25 @@ object H5OfflineEngine {
     /**
      * init offline engine
      * @param context context
-     * @param configUrl online config url
      * @param innerZipsPath inner zips path, package in app assets dir
      * @param isDebug show debug log
      */
     fun init(
         context: Context,
-        configUrl: String,
         innerZipsPath: String? = null,
         isDebug: Boolean = true
     ) {
         if (!innerZipsPath.isNullOrEmpty()) {
             H5OfflineService.unzipInnerH5Zips(context, innerZipsPath)
         }
-        if (configUrl.isNotEmpty()) {
-            H5OfflineService.checkUpdate(context, configUrl)
-        }
         debug = isDebug
+    }
+
+    /**
+     * download online zips
+     */
+    fun download(context: Context, downloadList: ArrayList<String>) {
+        H5OfflineService.download(context, downloadList)
     }
 
     /**
