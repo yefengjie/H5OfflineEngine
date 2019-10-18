@@ -11,7 +11,7 @@ this will allow some resource from local, the others from server
 ## How To Use In Android
 ### gradle
 implementation 'com.hzy:libp7zip:1.6.0'   
-implementation 'com.yefeng:h5_offline_engine:1.0.0'
+implementation 'com.yefeng:h5_offline_engine:1.1.0'
 ### init
 ```Java
 H5OfflineEngine.init(
