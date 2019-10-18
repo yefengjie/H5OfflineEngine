@@ -15,10 +15,10 @@ implementation 'com.yefeng:h5_offline_engine:1.0.0'
 ### init
 ```Java
 H5OfflineEngine.init(
-                context, //context
-                "http://localhost:8080/config/H5OfflineConfig.json", //online config
-                "innerH5OfflineZips", // inner zip assets path 
-                true) // show debug log
+                this, // context
+                "innerH5OfflineZips", // inner zip assets path
+                true // show debug log
+            )
 
 // replace resource in shouldInterceptRequest in webViewClient
 web.webViewClient = object : WebViewClient() {
@@ -44,6 +44,14 @@ web.webViewClient = object : WebViewClient() {
                 return super.shouldInterceptRequest(view, request)
             }
         }
+```
+### download offline files
+```Java
+	H5OfflineEngine.download(context, downloadUrlList)
+```
+### clear cache
+```Java
+	H5OfflineEngine.clear(context)
 ```
 
 
