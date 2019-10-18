@@ -19,7 +19,9 @@ H5OfflineEngine.init(
                 "innerH5OfflineZips", // inner zip assets path
                 true // show debug log
             )
-
+```
+### intercept request
+```Java
 // replace resource in shouldInterceptRequest in webViewClient
 web.webViewClient = object : WebViewClient() {
             override fun shouldInterceptRequest(
