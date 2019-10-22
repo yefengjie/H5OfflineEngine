@@ -1,6 +1,6 @@
 H5OfflineEngine is a library for Android developers to open H5 pages in offline mode
 # Offline Advantages
-#### Save about 20 times the flow
+#### Save about 90 times the flow
 package all h5 static resource into 7z file, save a lot of flow.
 in my test, this will save about 90 times the flow
 #### Without network and faster
