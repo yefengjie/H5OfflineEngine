@@ -7,6 +7,15 @@ in my test, this will save about 48 times the flow
 #### Easy to use
 #### Online,offline all support
 this will allow some resource from local, the others from server
+# performance
+without H5OfflineEngine first page  
+![without H5OfflineEngine firt page]()
+H5OfflineEngine first page  
+![without H5OfflineEngine firt page]()
+without H5OfflineEngine flow  
+![without H5OfflineEngine firt page]()
+H5OfflineEngine flow 
+![without H5OfflineEngine firt page]()
 # Normal Mode
 ## How To Use In Android
 ### gradle
